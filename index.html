@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>IT Inventory</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+  </style>
+</head>
+<body>
+  <h1>IT Inventory</h1>
+
+  <label for="sheet">Select Category:</label>
+  <select id="sheet">
+    <option value="Computers">Computers</option>
+    <option value="Peripherals">Peripherals</option>
+    <option value="Cartridges">Cartridges</option>
+    <option value="Stock">Stock</option>
+  </select>
+  <button onclick="loadData()">Load Data</button>
+
+  <table id="inventoryTable"></table>
+
+  <script>
+    const API_URL = 'https://script.google.com/macros/s/AKfycbwKrPrYoKRQNzTFQBxwpAj1q5zobttDRJL3TL2hrT-i2CsJzVsOED4FI4uCFWdENV0Seg/exec';
+
+    async function loadData() {
+      const sheet = document.getElementById('sheet').value;
+      const url = `${API_URL}?sheet=${sheet}&action=get`;
+
+      const response = await fetch(url, { method: 'POST' });
+      const data = await response.json();
+      
+      const table = document.getElementById('inventoryTable');
+      table.innerHTML = '';
+
+      // Headers
+      const headers = data[0];
+      const headerRow = document.createElement('tr');
+      headers.forEach(h => {
+        const th = document.createElement('th');
+        th.textContent = h;
+        headerRow.appendChild(th);
+      });
+      table.appendChild(headerRow);
+
+      // Rows
+      for (let i = 1; i < data.length; i++) {
+        const row = document.createElement('tr');
+        data[i].forEach(cell => {
+          const td = document.createElement('td');
+          td.textContent = cell;
+          row.appendChild(td);
+        });
+        table.appendChild(row);
+      }
+    }
+  </script>
+</body>
+</html>
